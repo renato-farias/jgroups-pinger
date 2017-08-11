@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://java.sun.com/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+         version="2.5">
+         
+    <servlet>
+        <servlet-name>jgroups-pinger</servlet-name>
+        <servlet-class>org.cometd.annotation.AnnotationCometdServlet</servlet-class>
+        <init-param>
+            <param-name>services</param-name>
+            <param-value>org.jgroups.tools.pinger.MessagingService</param-value>
+        </init-param>
+        <init-param>
+            <param-name>transports</param-name>
+            <param-value>org.jgroups.tools.pinger.http.transports.CrossOriginLongPollingTransport</param-value>
+        </init-param>
+        <init-param>
+            <param-name>allowedTransports</param-name>
+            <param-value>cross-origin-long-polling,long-polling,callback-polling,websocket</param-value>
+        </init-param>
+        <init-param>
+            <param-name>interval</param-name>
+            <param-value>1000</param-value>
+        </init-param>
+        <init-param>
+            <param-name>timeout</param-name>
+            <param-value>35000</param-value>
+        </init-param>
+        <init-param>
+            <param-name>multiSessionInterval</param-name>
+            <param-value>35000</param-value>
+        </init-param>
+        <init-param>
+            <param-name>logLevel</param-name>
+            <param-value>1</param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet>
+        <servlet-name>initializer</servlet-name>
+        <servlet-class>org.jgroups.tools.pinger.Initializer</servlet-class>
+        <load-on-startup>2</load-on-startup>
+    </servlet>
+
+    <servlet>
+        <servlet-name>api</servlet-name>
+        <servlet-class>org.jgroups.tools.pinger.http.Api</servlet-class>
+        <load-on-startup>3</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>api</servlet-name>
+        <url-pattern>/api/*</url-pattern>
+    </servlet-mapping>
+
+    <filter>
+        <filter-name>api-cors</filter-name>
+        <filter-class>org.jgroups.tools.pinger.http.headers.Api</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>api-cors</filter-name>
+        <url-pattern>/api/*</url-pattern>
+    </filter-mapping>
+
+    <servlet>
+        <servlet-name>probe</servlet-name>
+        <servlet-class>org.jgroups.tools.pinger.http.Probe</servlet-class>
+        <load-on-startup>4</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>probe</servlet-name>
+        <url-pattern>/appstatus</url-pattern>
+    </servlet-mapping>
+</web-app>
